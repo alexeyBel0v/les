@@ -99,6 +99,12 @@ button, input { font: inherit; color: inherit; }
   vertical-align: middle;
 }
 
+.condition {
+  margin: 6px 0 0;
+  color: var(--resin);
+  font-size: 15px;
+}
+
 .treeline {
   position: absolute;
   left: 0; right: 0; bottom: -1px;
@@ -253,7 +259,14 @@ button, input { font: inherit; color: inherit; }
   background: var(--pine-deep);
 }
 
-.death__time { margin: 0 0 12px; color: var(--moss); font-size: 15px; }
+.death__cause {
+  margin: 2px 0 14px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
 
 .death__again {
   width: 100%;

@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   }
 
   const state = sanitizeState(body.state);
-  if (!state.alive) {
+  if (state.over) {
     res.status(200).json(applyTurn(state, input, null));
     return;
   }

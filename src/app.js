@@ -1,4 +1,4 @@
-import { applyTurn, createInitialState, formatClock, OPENING_LINE } from '../lib/engine.js';
+import { applyTurn, createInitialState, formatClock, OPENING_LINE, sanitizeState } from '../lib/engine.js';
 import { demoReply } from './demo.js';
 
 const STORAGE_KEY = 'les:v1';
@@ -11,7 +11,7 @@ const $ = (id) => document.getElementById(id);
 const ui = {
   app: $('app'), clock: $('clock'), location: $('location'), weather: $('weather'),
   log: $('log'), options: $('options'), prompt: $('prompt'), input: $('input'), send: $('send'),
-  death: $('death'), deathTime: $('death-time'), again: $('again'), devlog: $('devlog'),
+  condition: $('condition'), death: $('death'), deathCause: $('death-cause'), again: $('again'), devlog: $('devlog'),
 };
 
 let game = load() ?? fresh();
@@ -26,7 +26,8 @@ function fresh() {
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return saved?.state && Array.isArray(saved.turns) ? saved : null;
+    // Старые сохранения могут не знать о новых полях — прогоняем через движок.
+    return saved?.state && Array.isArray(saved.turns) ? { ...saved, state: sanitizeState(saved.state) } : null;
   } catch {
     return null;
   }
@@ -77,6 +78,8 @@ function renderStatus(animateClock) {
   }
   ui.location.textContent = state.location;
   ui.weather.textContent = state.weather;
+  ui.condition.textContent = state.condition.join(', ');
+  ui.condition.hidden = state.condition.length === 0;
 
   ui.options.replaceChildren(...game.options.map((label) => {
     const button = document.createElement('button');
@@ -87,11 +90,14 @@ function renderStatus(animateClock) {
     return button;
   }));
 
-  const dead = !state.alive;
-  ui.app.classList.toggle('is-dead', dead);
-  ui.prompt.hidden = dead;
-  ui.death.hidden = !dead;
-  if (dead) ui.deathTime.textContent = `Время смерти ${clock}. Место: ${state.location.toLowerCase()}.`;
+  const over = state.over;
+  ui.app.classList.toggle('is-dead', over);
+  ui.prompt.hidden = over;
+  ui.death.hidden = !over;
+  if (over) {
+    const ending = state.ending || (state.alive ? 'Конец' : 'Смерть');
+    ui.deathCause.textContent = `${ending[0].toUpperCase()}${ending.slice(1)} в ${clock}.`;
+  }
   // Панели внизу меняют высоту журнала — докручиваем до последнего хода.
   ui.log.scrollTop = ui.log.scrollHeight;
 }
@@ -143,7 +149,7 @@ function writeDevlog(input, turn) {
 
 async function act(rawInput) {
   const input = rawInput.trim();
-  if (!input || busy || !game.state.alive) return;
+  if (!input || busy || game.state.over) return;
   busy = true;
   ui.send.disabled = true;
   ui.input.value = '';
@@ -158,14 +164,14 @@ async function act(rawInput) {
     pending.remove();
     game.state = turn.state;
     game.options = turn.options ?? [];
-    const kind = turn.state.alive ? null : 'death';
+    const kind = turn.state.over ? 'death' : null;
     const entry = { you: input, text: turn.message, time: turn.state.minutes, kind };
     game.turns.push(entry);
     renderTurn(entry, true);
     renderStatus(true);
     writeDevlog(input, turn);
     save();
-    if (kind === 'death') tg?.HapticFeedback?.notificationOccurred('error');
+    if (kind === 'death') tg?.HapticFeedback?.notificationOccurred(turn.state.alive ? 'warning' : 'error');
   } catch (error) {
     pending.remove();
     renderTurn({ you: input, text: error.message, time: null, kind: 'error' }, true);
@@ -173,7 +179,7 @@ async function act(rawInput) {
   } finally {
     busy = false;
     ui.send.disabled = false;
-    if (game.state.alive) ui.input.focus({ preventScroll: true });
+    if (!game.state.over) ui.input.focus({ preventScroll: true });
   }
 }
 
