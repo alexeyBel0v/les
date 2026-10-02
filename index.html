@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#1b2a21">
+  <title>Лес</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b2a21'/%3E%3Cpath d='M16 5l7 10h-4l6 9H7l6-9H9z' fill='%23dde1cd'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="top">
+      <div class="top__row">
+        <h1 class="wordmark">Лес</h1>
+        <time class="clock" id="clock" aria-live="polite">07:42</time>
+      </div>
+      <p class="where">
+        <span id="location">Лесная дорога</span>
+        <span class="where__weather" id="weather">Пасмурно</span>
+      </p>
+      <svg class="treeline" viewBox="0 0 390 28" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 28 L0 22 L8 14 L5 14 L12 6 L19 14 L16 14 L24 22 L30 18 L36 22 L44 12 L41 12 L49 2 L57 12 L54 12 L62 22 L70 20 L76 22 L83 15 L80 15 L87 8 L94 15 L91 15 L98 22 L120 22 L128 16 L125 16 L133 9 L141 16 L138 16 L146 22 L160 21 L168 13 L165 13 L174 3 L183 13 L180 13 L188 21 L204 22 L210 18 L216 22 L240 22 L248 14 L245 14 L253 6 L261 14 L258 14 L266 22 L274 20 L282 22 L289 16 L286 16 L293 10 L300 16 L297 16 L304 22 L322 22 L330 12 L327 12 L336 1 L345 12 L342 12 L350 22 L362 21 L369 15 L366 15 L373 9 L380 15 L377 15 L384 21 L390 22 L390 28 Z"/>
+      </svg>
+    </header>
+
+    <main class="log" id="log" aria-live="polite"></main>
+
+    <div class="options" id="options"></div>
+
+    <form class="prompt" id="prompt" autocomplete="off">
+      <label class="visually-hidden" for="input">Что вы делаете?</label>
+      <input class="prompt__input" id="input" name="input" maxlength="120" placeholder="Что вы делаете?" enterkeyhint="send">
+      <button class="prompt__send" id="send" type="submit" aria-label="Сделать">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12M12 6l6 6-6 6"/></svg>
+      </button>
+    </form>
+
+    <section class="death" id="death" hidden>
+      <p class="death__time" id="death-time"></p>
+      <button class="death__again" id="again" type="button">Начать заново</button>
+    </section>
+
+    <pre class="devlog" id="devlog" hidden></pre>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

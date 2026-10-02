@@ -1,0 +1,16 @@
+{
+  "name": "les",
+  "version": "0.1.0",
+  "private": true,
+  "description": "«Лес» — текстовая игра для Telegram Mini App с ИИ-ведущим",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env scripts/dev.js",
+    "test": "node --test test/*.test.js",
+    "try": "node --env-file-if-exists=.env scripts/try.js",
+    "check": "node --env-file-if-exists=.env scripts/check.js"
+  }
+}
